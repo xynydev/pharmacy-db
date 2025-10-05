@@ -7,6 +7,13 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@iconify/types':
+        specifier: ^2.0.0
+        version: 2.0.0
+      m3-svelte:
+        specifier: ^5.9.0
+        version: 5.9.0
     devDependencies:
       '@cloudflare/vite-plugin':
         specifier: ^1.13.10
@@ -17,6 +24,9 @@ importers:
       '@eslint/js':
         specifier: ^9.22.0
         version: 9.37.0
+      '@iconify-json/mdi':
+        specifier: ^1.2.3
+        version: 1.2.3
       '@libsql/client':
         specifier: ^0.14.0
         version: 0.14.0
@@ -795,6 +805,12 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
+  '@iconify-json/mdi@1.2.3':
+    resolution: {integrity: sha512-O3cLwbDOK7NNDf2ihaQOH5F9JglnulNDFV7WprU2dSoZu3h3cWH//h74uQAB87brHmvFVxIOkuBX2sZSzYhScg==}
+
+  '@iconify/types@2.0.0':
+    resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
+
   '@img/sharp-darwin-arm64@0.33.5':
     resolution: {integrity: sha512-UT4p+iz/2H4twwAoLCqfA9UH5pI6DggwKEGuaPy7nCVQ8ZsiY5PIcrRvD1DzuY3qYL07NtIQcWnBSY/heikIFQ==}
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
@@ -922,6 +938,12 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
+
+  '@ktibow/iconset-material-symbols@0.0.1758086573':
+    resolution: {integrity: sha512-xBvXeBqqoChAwoMJuyVYXrz1iVuInliuG2ch2RJuO1kqgeFSD8clyPgTo5Q8sfEcg2C+tZS+GuJFQ9RLudoaWg==}
+
+  '@ktibow/material-color-utilities-nightly@0.3.11758823675000':
+    resolution: {integrity: sha512-JGEHPzvjBGR1WEUEnQmGevZvP/LGluzBuDjFRpeIjt26EYfEcT20HAX4YXtwoauTS4F5vUTnw67kb5iYAUQvSg==}
 
   '@libsql/client@0.14.0':
     resolution: {integrity: sha512-/9HEKfn6fwXB5aTEEoMeFh4CtG0ZzbncBb1e++OCdVpgKZ/xyMsIVYXm0w7Pv4RUel803vE6LwniB3PqD72R0Q==}
@@ -1934,6 +1956,9 @@ packages:
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
 
+  m3-svelte@5.9.0:
+    resolution: {integrity: sha512-eanTP+vmCIoIyLQfP2XM88qU6vcgjR52ai1h1f8LXlvSm3FA6haZUyimdvMfBfb+1+yhTYz6LMDKr3ot/lpC9Q==}
+
   magic-string@0.30.19:
     resolution: {integrity: sha512-2N21sPY9Ws53PZvsEpVtNuSW+ScYbQdp4b9qUaL+9QkHUrGFKo56Lg9Emg5s9V/qrtNBmiR01sYhUOwu3H+VOw==}
 
@@ -2888,6 +2913,12 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
+  '@iconify-json/mdi@1.2.3':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify/types@2.0.0': {}
+
   '@img/sharp-darwin-arm64@0.33.5':
     optionalDependencies:
       '@img/sharp-libvips-darwin-arm64': 1.0.4
@@ -2990,6 +3021,12 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@ktibow/iconset-material-symbols@0.0.1758086573':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@ktibow/material-color-utilities-nightly@0.3.11758823675000': {}
 
   '@libsql/client@0.14.0':
     dependencies:
@@ -3946,6 +3983,13 @@ snapshots:
       p-locate: 5.0.0
 
   lodash.merge@4.6.2: {}
+
+  m3-svelte@5.9.0:
+    dependencies:
+      '@iconify/types': 2.0.0
+      '@ktibow/iconset-material-symbols': 0.0.1758086573
+      '@ktibow/material-color-utilities-nightly': 0.3.11758823675000
+      svelte: 5.39.8
 
   magic-string@0.30.19:
     dependencies:
