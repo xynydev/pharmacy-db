@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { authClient } from '$lib/authClient';
-	import { Button, TextFieldOutlined, Card, Icon } from 'm3-svelte';
+	import { Button, TextFieldOutlined, Card, Icon, Select } from 'm3-svelte';
 
 	import { icons as iconify } from '@iconify-json/mdi';
 	const { icons } = iconify;
@@ -8,12 +8,17 @@
 	let inviteCode = $state('');
 	let generatedCode: null | { code: string; expiresAt: Date } = $state(null);
 
+	let roleChangeUserID = $state('');
+	let roleChangeUserRole = $state('');
+	let roleChangeMessage = $state(null);
+
 	let errors = $state({
 		signUp: null,
 		addPasskey: null,
 		signInPasskey: null,
 		deletePasskey: null,
-		generateInviteCode: null
+		generateInviteCode: null,
+		changeUserRole: null
 	});
 
 	const signUp = async () => {
@@ -80,6 +85,22 @@
 			errors.generateInviteCode = null;
 		} else {
 			errors.generateInviteCode = await res.text();
+		}
+	};
+	const changeUserRole = async () => {
+		const res = await fetch('/api/changeUserRole', {
+			method: 'POST',
+			body: JSON.stringify({
+				userID: roleChangeUserID,
+				role: roleChangeUserRole
+			})
+		});
+		if (res.ok) {
+			roleChangeMessage = await res.text();
+			errors.changeUserRole = null;
+		} else {
+			roleChangeMessage = null;
+			errors.changeUserRole = await res.text();
 		}
 	};
 
@@ -189,6 +210,8 @@
 		{#if session.data.user.role !== 'user'}
 			<h3 class="m3-font-title-medium">Administration</h3>
 			<p class="m3-font-body-small">role: <code>{session.data.user.role}</code></p>
+			<h4 class="mt-2 m3-font-title-medium">Invite codes</h4>
+
 			<div class="mt-2 flex flex-col items-start gap-2 p-2">
 				<Button variant="tonal" onclick={generateInviteCode}>Generate invite code</Button>
 				{#if generatedCode}
@@ -205,7 +228,33 @@
 					</p>
 				{/if}
 			</div>
-
+			{#if session.data.user.role === 'superadmin'}
+				<h4 class="mt-2 m3-font-title-medium">Set user role</h4>
+				<div class="flex flex-col gap-4 p-2">
+					<div class="flex flex-row flex-wrap gap-2">
+						<TextFieldOutlined label="user id" bind:value={roleChangeUserID} />
+						<Select
+							label="Role"
+							options={[
+								{ text: 'user', value: 'user' },
+								{ text: 'admin', value: 'admin' },
+								{ text: 'superadmin', value: 'superadmin' }
+							]}
+							bind:value={roleChangeUserRole}
+						/>
+					</div>
+					<Button variant="tonal" onclick={changeUserRole}>Submit</Button>
+					{#if errors.changeUserRole}
+						<p class="text-error m3-font-body-medium">
+							Error changing user role: {errors.changeUserRole}
+						</p>
+					{:else if roleChangeMessage}
+						<p class="m3-font-body-medium">
+							{roleChangeMessage}
+						</p>
+					{/if}
+				</div>
+			{/if}
 			<hr class="my-4" />
 		{/if}
 		<Button onclick={signOut}>Log out</Button>
