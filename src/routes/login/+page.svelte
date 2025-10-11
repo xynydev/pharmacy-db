@@ -2,20 +2,28 @@
 	import { authClient } from '$lib/authClient';
 	import { Button, TextFieldOutlined, Card } from 'm3-svelte';
 
+	let inviteCode = $state('');
+
 	let errors = $state({
-		signIn: null,
+		signUp: null,
 		addPasskey: null,
 		signInPasskey: null,
 		deletePasskey: null
 	});
-	$inspect(errors);
 
-	const signIn = async () => {
-		const { data, error } = await authClient.signIn.anonymous();
-		if (error) {
-			errors.signIn = error;
+	const signUp = async () => {
+		const res = await fetch('/api/auth/sign-in/anonymous', {
+			method: 'POST',
+			body: JSON.stringify({
+				inviteCode: inviteCode
+			})
+		});
+		if (!res.ok) {
+			const error = await res.json();
+			console.log(error);
+			errors.signUp = error;
 		} else {
-			errors.signIn = null;
+			errors.signUp = null;
 			window.location.href = '/login';
 		}
 	};
@@ -85,12 +93,12 @@
 {#snippet invite()}
 	<div class="flex w-m max-w-full flex-col items-center gap-2 p-4">
 		<div class="flex flex-row flex-wrap items-center gap-2">
-			<TextFieldOutlined label="Invite code" />
-			<Button onclick={signIn}>Sign up</Button>
+			<TextFieldOutlined label="Invite code" bind:value={inviteCode} />
+			<Button onclick={signUp}>Sign up</Button>
 		</div>
-		{#if errors.signIn}
+		{#if errors.signUp}
 			<p class="text-error m3-font-body-medium">
-				Error signing up with invite code: {errors.signIn.message}
+				Error signing up with invite code: {errors.signUp.message}
 			</p>
 		{/if}
 		<div class="mt-10 flex flex-col gap-3">
