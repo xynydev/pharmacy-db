@@ -10,6 +10,12 @@ export async function handle({ event, resolve }) {
 		headers: event.request.headers
 	});
 
+	// Make session and user available on server
+	if (session) {
+		event.locals.session = session.session;
+		event.locals.user = session.user;
+	}
+
 	if (!session && event.url.pathname !== '/login' && !event.url.pathname.startsWith('/api/auth')) {
 		redirect(307, '/login');
 	}
