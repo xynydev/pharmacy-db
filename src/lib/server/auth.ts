@@ -5,6 +5,7 @@ import { anonymous } from 'better-auth/plugins';
 import { getDb } from './db';
 import schema from './db/schema';
 import { createAuthMiddleware, APIError } from 'better-auth/api';
+import { useInviteCode } from './invite';
 
 export function getAuth(platform: Readonly<App.Platform> | undefined) {
 	const db = getDb(platform);
@@ -37,10 +38,15 @@ export function getAuth(platform: Readonly<App.Platform> | undefined) {
 			before: createAuthMiddleware(async (ctx) => {
 				if (ctx.path === '/sign-in/anonymous') {
 					const code = JSON.parse(ctx.body).inviteCode;
-					console.log(code);
-					if (code !== '123') {
+					const res = await useInviteCode(db, code);
+					if (res.ok) {
+						const inviteCode = await res.json();
+						console.log(inviteCode);
+					} else {
+						const error = await res.text();
+						console.log(res);
 						throw new APIError('UNAUTHORIZED', {
-							message: 'Your invite code is invalid.'
+							message: 'Error validating code: ' + error
 						});
 					}
 				}
