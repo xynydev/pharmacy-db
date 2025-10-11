@@ -33,7 +33,10 @@ export const user = sqliteTable('user', {
 	image: text('image'),
 	createdAt: integer({ mode: 'timestamp' }).notNull(),
 	updatedAt: integer({ mode: 'timestamp' }).notNull(),
-	isAnonymous: integer({ mode: 'boolean' })
+	isAnonymous: integer({ mode: 'boolean' }),
+	role: text({ enum: ['user', 'admin', 'superadmin'] })
+		.notNull()
+		.default('user')
 });
 
 export const session = sqliteTable('session', {

@@ -23,6 +23,16 @@ export function getAuth(platform: Readonly<App.Platform> | undefined) {
 			anonymous()
 		],
 		basePath: '/api/auth',
+		user: {
+			additionalFields: {
+				role: {
+					type: 'string',
+					required: false,
+					defaultValue: 'user',
+					input: false
+				}
+			}
+		},
 		hooks: {
 			before: createAuthMiddleware(async (ctx) => {
 				if (ctx.path === '/sign-in/anonymous') {

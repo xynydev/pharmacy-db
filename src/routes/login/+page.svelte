@@ -131,7 +131,8 @@
 			You can now use the <a href="/" class="underline">database</a> and submit reports.
 		</p>
 		<p class="mt-2 m3-font-body-small">user id: <code>{session.data.user.id}</code></p>
-		<h3 class="mt-4 mb-2 m3-font-title-medium">Passkeys</h3>
+		<hr class="my-4" />
+		<h3 class="mb-2 m3-font-title-medium">Passkeys</h3>
 		<div class="mb-4 grid grid-cols-1 gap-2 m:mb-0 m:grid-cols-[1fr_auto]">
 			<p class="m3-font-body-medium m:my-2">
 				Passkeys are a secure way to keep your access to the pharmacy database. Invite codes can be
@@ -172,6 +173,13 @@
 			<p class="italic m3-font-body-small">No passkeys found</p>
 		{/if}
 		<hr class="my-4" />
+		{#if session.data.user.role !== 'user'}
+			<h3 class="m3-font-title-medium">Administration</h3>
+			<p class="m3-font-body-small">role: <code>{session.data.user.role}</code></p>
+			<h4 class="mt-2 m3-font-title-small">Generate invite codes</h4>
+			<p class="m3-font-body-small">To be implemented...</p>
+			<hr class="my-4" />
+		{/if}
 		<Button onclick={signOut}>Log out</Button>
 	</div>
 {/snippet}
