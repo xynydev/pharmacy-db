@@ -3,16 +3,17 @@
 	import { Button, TextFieldOutlined, Card, Icon } from 'm3-svelte';
 
 	import { icons as iconify } from '@iconify-json/mdi';
-	import type { IconifyIcon } from '@iconify/types';
 	const { icons } = iconify;
 
 	let inviteCode = $state('');
+	let generatedCode: null | { code: string; expiresAt: Date } = $state(null);
 
 	let errors = $state({
 		signUp: null,
 		addPasskey: null,
 		signInPasskey: null,
-		deletePasskey: null
+		deletePasskey: null,
+		generateInviteCode: null
 	});
 
 	const signUp = async () => {
@@ -68,6 +69,18 @@
 				}
 			}
 		});
+	};
+	const generateInviteCode = async () => {
+		const res = await fetch('/api/generateInviteCode', {
+			method: 'POST'
+		});
+		if (res.ok) {
+			const inviteCode = await res.json();
+			generatedCode = { code: inviteCode.code, expiresAt: new Date(inviteCode.expiresAt) };
+			errors.generateInviteCode = null;
+		} else {
+			errors.generateInviteCode = await res.text();
+		}
 	};
 
 	let session = $state();
@@ -176,8 +189,23 @@
 		{#if session.data.user.role !== 'user'}
 			<h3 class="m3-font-title-medium">Administration</h3>
 			<p class="m3-font-body-small">role: <code>{session.data.user.role}</code></p>
-			<h4 class="mt-2 m3-font-title-small">Generate invite codes</h4>
-			<p class="m3-font-body-small">To be implemented...</p>
+			<div class="mt-2 flex flex-col items-start gap-2 p-2">
+				<Button variant="tonal" onclick={generateInviteCode}>Generate invite code</Button>
+				{#if generatedCode}
+					<Card variant="outlined">
+						<p class="m3-font-body-small">
+							Generated invite code: <code>{generatedCode.code}</code><br />
+							Will expire on {generatedCode.expiresAt.toLocaleString()}
+						</p>
+					</Card>
+				{/if}
+				{#if errors.generateInviteCode}
+					<p class="text-error m3-font-body-medium">
+						Error generating invite code: {errors.generateInviteCode}
+					</p>
+				{/if}
+			</div>
+
 			<hr class="my-4" />
 		{/if}
 		<Button onclick={signOut}>Log out</Button>
