@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { authClient } from '$lib/authClient';
-	import { Button, TextFieldOutlined, Card } from 'm3-svelte';
+	import { Button, TextFieldOutlined, Card, Icon } from 'm3-svelte';
+
+	import { icons as iconify } from '@iconify-json/mdi';
+	import type { IconifyIcon } from '@iconify/types';
+	const { icons } = iconify;
 
 	let inviteCode = $state('');
 
@@ -44,7 +48,7 @@
 			errors.signInPasskey = error;
 		} else {
 			errors.signInPasskey = null;
-			window.location.href = '/login';
+			window.location.href = '/';
 		}
 	};
 	const deletePasskey = async (id: string) => {
@@ -84,7 +88,7 @@
 			{#if !session?.data}
 				{@render invite()}
 			{:else}
-				{@render loggedIn(passkeys)}
+				{@render loggedIn(session, passkeys)}
 			{/if}
 		{/await}
 	{/await}
@@ -113,9 +117,11 @@
 	</div>
 {/snippet}
 
-{#snippet loggedIn(passkeys)}
+{#snippet loggedIn(session, passkeys)}
 	<header class="w-full bg-surface-container-low p-4">
-		<a href="/">
+		<a href="/" class="flex flex-row items-center gap-2">
+			<Icon icon={icons['arrow-left-bold']} size={24} />
+
 			<h1 class="m3-font-title-large">Pharmacy Database</h1>
 		</a>
 	</header>
@@ -124,11 +130,13 @@
 		<p class="m3-font-body-medium">
 			You can now use the <a href="/" class="underline">database</a> and submit reports.
 		</p>
+		<p class="mt-2 m3-font-body-small">user id: <code>{session.data.user.id}</code></p>
 		<h3 class="mt-4 mb-2 m3-font-title-medium">Passkeys</h3>
-		<div class="grid grid-cols-1 gap-2 m:grid-cols-[1fr_auto]">
-			<p class="my-2 m3-font-body-medium">
-				Passkeys are a secure way to store your access to the pharmacy database. Invite codes can be
-				used only once, but when you set up a passkey you will always have access.
+		<div class="mb-4 grid grid-cols-1 gap-2 m:mb-0 m:grid-cols-[1fr_auto]">
+			<p class="m3-font-body-medium m:my-2">
+				Passkeys are a secure way to keep your access to the pharmacy database. Invite codes can be
+				used only once and sessions will expire after 7 days of no usage, but when you set up a
+				passkey you will always have access to the site.
 			</p>
 			<Button variant="tonal" onclick={addPasskey}>Add Passkey</Button>
 		</div>
@@ -137,7 +145,6 @@
 				Error adding passkey: {errors.addPasskey.message}
 			</p>
 		{/if}
-		<hr class="my-4" />
 		{#if passkeys.data.length > 0}
 			<ul class="flex flex-col gap-2">
 				{#each passkeys.data as passkey (passkey.id)}

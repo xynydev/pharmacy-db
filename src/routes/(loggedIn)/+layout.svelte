@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { NavCMLXItem } from 'm3-svelte';
+	import { NavCMLXItem, Icon, Button } from 'm3-svelte';
 	import { icons as iconify } from '@iconify-json/mdi';
 	import type { IconifyIcon } from '@iconify/types';
 
@@ -11,8 +11,13 @@
 
 <div class="grid min-h-dvh grid-cols-1 grid-rows-[1fr_auto] x:grid-cols-[auto_1fr]">
 	<div class="min-h-full x:col-start-2 x:col-end-2">
-		<header class="w-full bg-surface-container-low p-4">
+		<header class="flex w-full flex-row items-center bg-surface-container-low p-4">
 			<h1 class="m3-font-title-large">Pharmacy Database</h1>
+			<div class="ml-auto">
+				<Button iconType="full" href="/login">
+					<Icon icon={icons['account-circle']} />
+				</Button>
+			</div>
 		</header>
 		<main class="p-4">
 			{@render children?.()}
