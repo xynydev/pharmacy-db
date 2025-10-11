@@ -22,6 +22,13 @@ export const report = sqliteTable('report', {
 	extraInfo: text('extra_info')
 });
 
+export const inviteCode = sqliteTable('invite_code', {
+	id: integer('id').primaryKey(),
+	code: text('code').notNull(),
+	expiresAt: integer({ mode: 'timestamp' }).notNull(),
+	used: integer({ mode: 'boolean' }).notNull().default(false)
+});
+
 // ---
 // https://www.better-auth.com/docs/concepts/database
 
