@@ -12,7 +12,11 @@ out geom;`);
 
 const areas: Array<{ name: 'Finland'; code: string }> = [{ name: 'Finland', code: '3600054224' }];
 
-export async function POST({ platform }) {
+export async function POST({ platform, locals }) {
+	if (locals.user.role !== 'superadmin') {
+		return new Response('Unauthorized', { status: 403 });
+	}
+
 	const db = getDb(platform);
 
 	for (const area of areas) {
