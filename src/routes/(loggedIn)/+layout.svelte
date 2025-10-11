@@ -13,11 +13,6 @@
 	<div class="min-h-full x:col-start-2 x:col-end-2">
 		<header class="flex w-full flex-row items-center bg-surface-container-low p-4">
 			<h1 class="m3-font-title-large">Pharmacy Database</h1>
-			<div class="ml-auto">
-				<Button iconType="full" href="/login">
-					<Icon icon={icons['account-circle']} />
-				</Button>
-			</div>
 		</header>
 		<main class="p-4">
 			{@render children?.()}
@@ -42,6 +37,13 @@
 				icon={icons['map'] as IconifyIcon}
 				selected={false}
 				href="/"
+			/>
+			<NavCMLXItem
+				variant="auto"
+				text="Account"
+				icon={icons['account-circle'] as IconifyIcon}
+				selected={page.url.pathname === '/account'}
+				href="/account"
 			/>
 		</nav>
 	</div>
