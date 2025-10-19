@@ -135,7 +135,7 @@
 							<div class="grid grid-cols-[1fr_auto]">
 								<h4 class="m3-font-title-small">{passkey.name}</h4>
 								<p class="col-start-1 m3-font-body-small">
-									Created {new Date(passkey.createdAt).toLocaleString()}
+									Created {new Date(passkey.createdAt).toLocaleString('se')}
 								</p>
 								<div class="col-start-2 row-span-2 row-start-1">
 									<Button variant="tonal" onclick={() => deletePasskey(passkey.id)}>Delete</Button>
@@ -165,7 +165,7 @@
 					<Card variant="outlined">
 						<p class="m3-font-body-small">
 							Generated invite code: <code>{generatedCode.code}</code><br />
-							Will expire on {generatedCode.expiresAt.toLocaleString()}
+							Will expire on {generatedCode.expiresAt.toLocaleString('se')}
 						</p>
 					</Card>
 				{/if}
