@@ -146,3 +146,17 @@ body {
 	--m3-font: /* https://modernfontstacks.com/ */
 		font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
 }
+
+@theme {
+	--color-excellent-bg: #bfcbeb;
+	--color-excellent-fg: #4b6095;
+
+	--color-good-bg: #9ae9bc;
+	--color-good-fg: #212e2a;
+
+	--color-unknown-bg: #b5b9c1;
+	--color-unknown-fg: #1b2331;
+
+	--color-bad-bg: #ec4b4b;
+	--color-bad-fg: #442626;
+}

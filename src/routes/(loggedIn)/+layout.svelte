@@ -35,8 +35,8 @@
 				variant="auto"
 				text="Map"
 				icon={icons['map'] as IconifyIcon}
-				selected={false}
-				href="/"
+				selected={page.url.pathname === '/map'}
+				href="/map"
 			/>
 			<NavCMLXItem
 				variant="auto"

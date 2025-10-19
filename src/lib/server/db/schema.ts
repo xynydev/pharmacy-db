@@ -18,6 +18,8 @@ export const pharmacy = sqliteTable('pharmacy', {
 export const report = sqliteTable('report', {
 	id: integer('id').primaryKey(),
 	pharmacyId: integer('pharmacy_id').references(() => pharmacy.id),
+	userId: integer('user_id').references(() => user.id),
+	time: integer({ mode: 'timestamp' }).notNull(),
 	report: text({ enum: ['++', '+', '-'] }).notNull(),
 	extraInfo: text('extra_info')
 });
