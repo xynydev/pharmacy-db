@@ -55,9 +55,12 @@ CREATE TABLE `pharmacy` (
 CREATE TABLE `report` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`pharmacy_id` integer,
+	`user_id` integer,
+	`time` integer NOT NULL,
 	`report` text NOT NULL,
 	`extra_info` text,
-	FOREIGN KEY (`pharmacy_id`) REFERENCES `pharmacy`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`pharmacy_id`) REFERENCES `pharmacy`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `session` (
