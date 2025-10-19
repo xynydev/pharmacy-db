@@ -3,7 +3,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { passkey } from 'better-auth/plugins/passkey';
 import { anonymous } from 'better-auth/plugins';
 import { getDb } from './db';
-import schema from './db/schema';
+import * as schema from './db/schema';
 import { createAuthMiddleware, APIError } from 'better-auth/api';
 import { useInviteCode } from './invite';
 
