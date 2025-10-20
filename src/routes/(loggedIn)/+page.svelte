@@ -42,32 +42,27 @@
 
 	let pharmacyReportOpen = $state(false);
 
-	let sortedPharmacies = $derived.by(() => {
-		if (pos.lat === 0 && pos.lon === 0) {
-			return pharmacies;
-		} else {
-			return pharmacies.sort((a, b) => {
-				const distanceA = haversineDistance(
-					[pos.lat, pos.lon],
-					[parseFloat(a.lat), parseFloat(a.lon)]
-				);
-				const distanceB = haversineDistance(
-					[pos.lat, pos.lon],
-					[parseFloat(b.lat), parseFloat(b.lon)]
-				);
+	let filteredSortedPharmacies = $derived.by(() => {
+		const sortedPharmacies =
+			pos.lat === 0 && pos.lon === 0
+				? pharmacies
+				: pharmacies.sort((a, b) => {
+						const distanceA = haversineDistance(
+							[pos.lat, pos.lon],
+							[parseFloat(a.lat), parseFloat(a.lon)]
+						);
+						const distanceB = haversineDistance(
+							[pos.lat, pos.lon],
+							[parseFloat(b.lat), parseFloat(b.lon)]
+						);
 
-				return distanceA - distanceB;
-			});
-		}
-	});
+						return distanceA - distanceB;
+					});
 
-	let fuse = $derived(
-		new Fuse(sortedPharmacies, {
+		const fuse = new Fuse(sortedPharmacies, {
 			keys: ['name', 'address']
-		})
-	);
+		});
 
-	let filteredPharmacies = $derived.by(() => {
 		const fuseResults =
 			query === '' ? sortedPharmacies : fuse.search(query).map((result) => result.item);
 		const filtered = fuseResults.filter((pharmacy) => {
@@ -90,7 +85,6 @@
 								Math.max(pharmacy.reports.excellent, pharmacy.reports.good, pharmacy.reports.bad)
 						)
 					: 'unknown';
-			console.log(mainReport);
 			return categories.includes(mainReport);
 		});
 		return filtered;
@@ -147,7 +141,7 @@
 	</div>
 </div>
 <div class="flex flex-col gap-4">
-	{#each filteredPharmacies as pharmacy (pharmacy.id)}
+	{#each filteredSortedPharmacies as pharmacy (pharmacy.id)}
 		<Card
 			variant="outlined"
 			onclick={() => {
