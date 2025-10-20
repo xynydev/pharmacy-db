@@ -1,6 +1,7 @@
 import { getDb } from '$lib/server/db';
 import { pharmacy } from '$lib/server/db/schema';
 import { sql } from 'drizzle-orm';
+import type { DrizzleD1Database } from 'drizzle-orm/d1';
 
 // const overpassHost = 'https://overpass-api.de/api/interpreter';
 const overpassHost = 'https://overpass.private.coffee/api/interpreter';
@@ -64,7 +65,6 @@ export async function POST({ platform, locals }) {
 		console.log('Transforming data');
 
 		const pharmacies = data.elements.flatMap((pharmacyData) => {
-			console.log('hi');
 			const { tags } = pharmacyData;
 			const { lat, lon } = (() => {
 				if (pharmacyData.lat !== undefined && pharmacyData.lon !== undefined) {
@@ -99,20 +99,27 @@ export async function POST({ platform, locals }) {
 			];
 		});
 
+		console.log(`Gathered ${pharmacies.length} pharmacies`);
+
 		console.log('Inserting pharmacies to db');
 
 		try {
-			await db
-				.insert(pharmacy)
-				.values(pharmacies)
-				.onConflictDoUpdate({
-					target: pharmacy.id,
-					// replace all keys in the row
-					set: Object.assign(
-						{},
-						...Object.keys(pharmacies[0]).map((k) => ({ [k]: sql`excluded.${sql.identifier(k)}` }))
-					)
-				});
+			const chunkSize = 100;
+			for (let i = 0; i < pharmacies.length; i += chunkSize) {
+				await db
+					.insert(pharmacy)
+					.values(pharmacies.slice(i, i + chunkSize))
+					.onConflictDoUpdate({
+						target: pharmacy.id,
+						// replace all keys in the row
+						set: Object.assign(
+							{},
+							...Object.keys(pharmacies[0]).map((k) => ({
+								[k]: sql`excluded.${sql.identifier(k)}`
+							}))
+						)
+					});
+			}
 		} catch (error) {
 			console.error('Error inserting pharmacies to db: ' + error);
 			return new Response('Error', { status: 500 });
