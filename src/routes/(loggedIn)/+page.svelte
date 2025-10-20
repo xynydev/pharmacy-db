@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Fuse from 'fuse.js';
-	import { TextFieldOutlined, Card } from 'm3-svelte';
+	import { TextFieldOutlined, Card, ConnectedButtons, TogglePrimitive } from 'm3-svelte';
 
 	import PharmacySheet from '$lib/ui/pharmacySheet.svelte';
 	import PharmacyReport from '$lib/ui/pharmacyReport.svelte';
@@ -14,6 +14,16 @@
 
 	let query = $state('');
 
+	let filter = $state({
+		quality: {
+			Excellent: false,
+			Good: false,
+			Bad: false,
+			Unknown: false
+		}
+	});
+	$inspect(filter);
+
 	let pharmacySheetOpen = $state(false);
 	let selectedPharmacy: (typeof pharmacies)[0] | undefined = $state(undefined);
 
@@ -24,18 +34,39 @@
 	});
 
 	let filteredPharmacies = $derived.by(() => {
-		if (query === '') {
-			return pharmacies;
-		}
-		return fuse.search(query).map((result) => result.item);
+		const fuseResults = query === '' ? pharmacies : fuse.search(query).map((result) => result.item);
+		const filtered = fuseResults.filter((pharmacy) => {
+			if (
+				!filter.quality.Excellent &&
+				!filter.quality.Good &&
+				!filter.quality.Bad &&
+				!filter.quality.Unknown
+			) {
+				return true;
+			}
+			const categories = Object.keys(filter.quality)
+				.filter((key) => filter.quality[key])
+				.map((key) => key.toLowerCase());
+			const mainReport =
+				pharmacy.reports.excellent + pharmacy.reports.good + pharmacy.reports.bad > 0
+					? Object.keys(pharmacy.reports).find(
+							(key) =>
+								pharmacy.reports[key as keyof typeof pharmacy.reports] ===
+								Math.max(pharmacy.reports.excellent, pharmacy.reports.good, pharmacy.reports.bad)
+						)
+					: 'unknown';
+			console.log(mainReport);
+			return categories.includes(mainReport);
+		});
+		return filtered;
 	});
 </script>
 
 <div class="mb-4 w-full">
 	<TextFieldOutlined label="Search" bind:value={query} />
-	<div>
-		<p>Service quality guide</p>
-		<ul class="flex flex-col gap-2">
+	<details class="p-2">
+		<summary>Service quality guide</summary>
+		<ul class="flex flex-col gap-2 p-4">
 			<li class="flex flex-row items-center gap-2">
 				<ReportQualityIcon report="++" /> Excellent: service was fast and friendly, no needless waiting
 				or uncertainty
@@ -50,6 +81,17 @@
 				<ReportQualityIcon report="?" /> Unknown: no data available
 			</li>
 		</ul>
+	</details>
+	<div class="flex flex-row">
+		<div class="flex flex-col gap-2">
+			<p>Filter by service quality:</p>
+			<ConnectedButtons>
+				<TogglePrimitive bind:toggle={filter.quality.Excellent}>Excellent</TogglePrimitive>
+				<TogglePrimitive bind:toggle={filter.quality.Good}>Good</TogglePrimitive>
+				<TogglePrimitive bind:toggle={filter.quality.Bad}>Bad</TogglePrimitive>
+				<TogglePrimitive bind:toggle={filter.quality.Unknown}>Unknown</TogglePrimitive>
+			</ConnectedButtons>
+		</div>
 	</div>
 </div>
 <div class="flex flex-col gap-4">
