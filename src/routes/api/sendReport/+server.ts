@@ -6,23 +6,20 @@ export async function POST({ request, platform, locals }) {
 		return new Response('Unauthorized', { status: 403 });
 	}
 
-	const { pharmacyId, report, extraInfo } = await request.json();
+	const { pharmacyId, report, extraInfo, date } = await request.json();
 	if (!pharmacyId || !report) {
 		return new Response('Missing required fields', { status: 400 });
 	}
 
 	const db = getDb(platform);
 
-	let reportData = {
+	const reportData = {
 		pharmacyId: pharmacyId,
 		userId: locals.session.userId,
-		time: new Date(),
-		report: report
+		time: locals.user.role === 'superadmin' && date ? new Date(date) : new Date(),
+		report: report,
+		extraInfo: extraInfo ?? undefined
 	};
-
-	if (extraInfo) {
-		reportData = { ...reportData, extraInfo: extraInfo };
-	}
 
 	try {
 		await db.insert(reportTable).values(reportData);
