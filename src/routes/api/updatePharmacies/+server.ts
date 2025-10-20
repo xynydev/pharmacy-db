@@ -1,6 +1,6 @@
 import { getDb } from '$lib/server/db';
 import { pharmacy } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 
 // const overpassHost = 'https://overpass-api.de/api/interpreter';
 const overpassHost = 'https://overpass.private.coffee/api/interpreter';
@@ -61,7 +61,10 @@ export async function POST({ platform, locals }) {
 
 		console.log(`Data fetched successfully`);
 
-		for (const pharmacyData of data.elements) {
+		console.log('Transforming data');
+
+		const pharmacies = data.elements.flatMap((pharmacyData) => {
+			console.log('hi');
 			const { tags } = pharmacyData;
 			const { lat, lon } = (() => {
 				if (pharmacyData.lat !== undefined && pharmacyData.lon !== undefined) {
@@ -73,50 +76,46 @@ export async function POST({ platform, locals }) {
 				}
 			})();
 			if (lat === null || lon === null) {
-				continue;
+				return [];
 			}
-
-			const pharmacyRow = {
-				id: pharmacyData.id,
-				lat: lat,
-				lon: lon,
-				country: area.name,
-				name: tags.name,
-				brand: tags.brand,
-				description: tags.description,
-				phone: tags.phone,
-				email: tags.email,
-				opening_hours: tags.opening_hours,
-				address: `${tags['addr:street']} ${tags['addr:housenumber']}, ${tags['addr:postcode']} ${tags['addr:city']}`,
-				url: tags.website || tags.url || null
-			};
-			if (pharmacyRow.name === undefined) {
-				continue;
+			if (tags.name === undefined) {
+				return [];
 			}
-			console.log(`Found pharmacy ${pharmacyRow.name} with id ${pharmacyRow.id}`);
-
-			const existingPharmacy = await db.query.pharmacy.findFirst({
-				where: eq(pharmacy.id, pharmacyRow.id)
-			});
-			if (existingPharmacy !== undefined) {
-				console.log(`Found existing pharmacy ${existingPharmacy.name} with id ${pharmacyRow.id}`);
-				try {
-					await db.update(pharmacy).set(pharmacyRow).where(eq(pharmacy.id, pharmacyRow.id));
-					console.log('Data updated successfully');
-				} catch (error) {
-					console.error(`Failed to update pharmacy with id ${pharmacyRow.id}:`, error);
-					console.log(pharmacyData);
+			return [
+				{
+					id: pharmacyData.id,
+					lat: lat,
+					lon: lon,
+					country: area.name,
+					name: tags.name,
+					brand: tags.brand,
+					description: tags.description,
+					phone: tags.phone,
+					email: tags.email,
+					opening_hours: tags.opening_hours,
+					address: `${tags['addr:street']} ${tags['addr:housenumber']}, ${tags['addr:postcode']} ${tags['addr:city']}`,
+					url: tags.website || tags.url || undefined
 				}
-			} else {
-				console.log(`Adding new pharmacy ${pharmacyRow.name} with id ${pharmacyRow.id}`);
-				try {
-					await db.insert(pharmacy).values(pharmacyRow);
-					console.log('Row added successfully');
-				} catch (error) {
-					console.error(`Failed to insert pharmacy with id ${pharmacyRow.id}:`, error);
-					console.log(pharmacyData);
-				}
-			}
+			];
+		});
+
+		console.log('Inserting pharmacies to db');
+
+		try {
+			await db
+				.insert(pharmacy)
+				.values(pharmacies)
+				.onConflictDoUpdate({
+					target: pharmacy.id,
+					// replace all keys in the row
+					set: Object.assign(
+						{},
+						...Object.keys(pharmacies[0]).map((k) => ({ [k]: sql`excluded.${sql.identifier(k)}` }))
+					)
+				});
+		} catch (error) {
+			console.error('Error inserting pharmacies to db: ' + error);
+			return new Response('Error', { status: 500 });
 		}
 	}
 
