@@ -24,6 +24,7 @@
 		"@cloudflare/vite-plugin": "^1.13.10",
 		"@eslint/compat": "^1.2.5",
 		"@eslint/js": "^9.22.0",
+		"@iconify-json/material-symbols": "^1.2.42",
 		"@iconify-json/mdi": "^1.2.3",
 		"@libsql/client": "^0.14.0",
 		"@sveltejs/adapter-cloudflare": "^7.0.0",
