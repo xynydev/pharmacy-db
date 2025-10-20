@@ -1,6 +1,16 @@
 <script lang="ts">
 	import Fuse from 'fuse.js';
-	import { TextFieldOutlined, Card, ConnectedButtons, TogglePrimitive } from 'm3-svelte';
+	import {
+		TextFieldOutlined,
+		Card,
+		ConnectedButtons,
+		TogglePrimitive,
+		Icon,
+		Button
+	} from 'm3-svelte';
+
+	import { icons as iconify } from '@iconify-json/material-symbols';
+	const { icons } = iconify;
 
 	import PharmacySheet from '$lib/ui/pharmacySheet.svelte';
 	import PharmacyReport from '$lib/ui/pharmacyReport.svelte';
@@ -8,6 +18,8 @@
 
 	import type { PageProps } from './$types';
 	import PharmacyCardContents from '$lib/ui/pharmacyCardContents.svelte';
+
+	import { haversineDistance } from '$lib/geoHelpers';
 
 	let { data }: PageProps = $props();
 	let { pharmacies } = data;
@@ -22,19 +34,42 @@
 			Unknown: false
 		}
 	});
-	$inspect(filter);
+
+	let pos = $state({ lat: 0, lon: 0 });
 
 	let pharmacySheetOpen = $state(false);
 	let selectedPharmacy: (typeof pharmacies)[0] | undefined = $state(undefined);
 
 	let pharmacyReportOpen = $state(false);
 
-	const fuse = new Fuse(pharmacies, {
-		keys: ['name', 'address']
+	let sortedPharmacies = $derived.by(() => {
+		if (pos.lat === 0 && pos.lon === 0) {
+			return pharmacies;
+		} else {
+			return pharmacies.sort((a, b) => {
+				const distanceA = haversineDistance(
+					[pos.lat, pos.lon],
+					[parseFloat(a.lat), parseFloat(a.lon)]
+				);
+				const distanceB = haversineDistance(
+					[pos.lat, pos.lon],
+					[parseFloat(b.lat), parseFloat(b.lon)]
+				);
+
+				return distanceA - distanceB;
+			});
+		}
 	});
 
+	let fuse = $derived(
+		new Fuse(sortedPharmacies, {
+			keys: ['name', 'address']
+		})
+	);
+
 	let filteredPharmacies = $derived.by(() => {
-		const fuseResults = query === '' ? pharmacies : fuse.search(query).map((result) => result.item);
+		const fuseResults =
+			query === '' ? sortedPharmacies : fuse.search(query).map((result) => result.item);
 		const filtered = fuseResults.filter((pharmacy) => {
 			if (
 				!filter.quality.Excellent &&
@@ -60,10 +95,27 @@
 		});
 		return filtered;
 	});
+
+	function geolocate() {
+		navigator.geolocation.getCurrentPosition(
+			(position) => {
+				pos.lat = position.coords.latitude;
+				pos.lon = position.coords.longitude;
+			},
+			(error) => {
+				console.error(error);
+			}
+		);
+	}
 </script>
 
 <div class="mb-4 w-full">
-	<TextFieldOutlined label="Search" bind:value={query} />
+	<div class="flex flex-row items-center gap-3">
+		<TextFieldOutlined label="Search" bind:value={query} />
+		<Button variant="outlined" iconType="full" size="l" onclick={geolocate}>
+			<Icon icon={icons['my-location']} />
+		</Button>
+	</div>
 	<details class="p-2">
 		<summary>Service quality guide</summary>
 		<ul class="flex flex-col gap-2 p-4">
