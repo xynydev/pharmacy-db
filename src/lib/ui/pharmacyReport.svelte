@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Dialog, Button, Select, TextFieldOutlinedMultiline } from 'm3-svelte';
+	import { Dialog, Button, Select, TextFieldOutlinedMultiline, DateFieldOutlined } from 'm3-svelte';
+	import { authClient } from '$lib/authClient';
 	import ReportQualityIcon from '$lib/ui/reportQualityIcon.svelte';
 
 	let {
@@ -14,6 +15,7 @@
 
 	let quality: '++' | '+' | '-' | '' = $state('');
 	let note = $state('');
+	let date = $state('');
 
 	const qualityText = {
 		'++': 'Excellent',
@@ -25,6 +27,11 @@
 		if (pharmacy) {
 			quality = '';
 		}
+	});
+
+	let session = $state();
+	$effect(() => {
+		session = authClient.getSession();
 	});
 
 	async function submitReport() {
@@ -42,8 +49,12 @@
 			const report = {
 				pharmacyId: pharmacy.id,
 				report: quality,
-				extraInfo: note
+				extraInfo: note,
+				date: undefined as undefined | Date
 			};
+			if (date) {
+				report.date = new Date(date);
+			}
 
 			const res = await fetch('/api/sendReport', {
 				method: 'POST',
@@ -72,6 +83,7 @@
 				</div>
 				<hr class="opacity-25" />
 				<form class="flex flex-col gap-2">
+					{date}
 					<p>Service quality evaluation</p>
 					<ul class="flex flex-col gap-2">
 						<li class="flex flex-row items-center gap-2">
@@ -98,6 +110,16 @@
 					/>
 					<TextFieldOutlinedMultiline label="Extra comment (optional)" bind:value={note}
 					></TextFieldOutlinedMultiline>
+					{#await session then session}
+						{#if session.data?.user.role === 'superadmin'}
+							<div class="relative mt-2 flex flex-col rounded-xs border-2 border-b-current">
+								<label for="date" class="absolute -top-2 left-4 bg-surface-container-high px-2"
+									>Backfill date (optional)</label
+								>
+								<input class="p-4" type="date" id="date" name="date" bind:value={date} />
+							</div>
+						{/if}
+					{/await}
 				</form>
 			</div>
 
