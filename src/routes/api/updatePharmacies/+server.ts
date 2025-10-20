@@ -2,6 +2,9 @@ import { getDb } from '$lib/server/db';
 import { pharmacy } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 
+// const overpassHost = 'https://overpass-api.de/api/interpreter';
+const overpassHost = 'https://overpass.private.coffee/api/interpreter';
+
 const overpassQuery = (area: string) =>
 	encodeURIComponent(`[out:json][timeout:25];
 area(${area})->.searchArea;
@@ -20,10 +23,11 @@ export async function POST({ platform, locals }) {
 	const db = getDb(platform);
 
 	for (const area of areas) {
-		const res = await fetch(
-			`https://overpass-api.de/api/interpreter?data=${overpassQuery(area.code)}`
-		);
+		console.log(`Fetching pharmacies in ${area.name}...`);
+
+		const res = await fetch(`${overpassHost}?data=${overpassQuery(area.code)}`);
 		if (!res.ok) throw new Error('Failed to fetch pharmacies');
+
 		const data: {
 			elements: [
 				{
@@ -54,6 +58,8 @@ export async function POST({ platform, locals }) {
 				}
 			];
 		} = await res.json();
+
+		console.log(`Data fetched successfully`);
 
 		for (const pharmacyData of data.elements) {
 			const { tags } = pharmacyData;
@@ -87,20 +93,25 @@ export async function POST({ platform, locals }) {
 			if (pharmacyRow.name === undefined) {
 				continue;
 			}
+			console.log(`Found pharmacy ${pharmacyRow.name} with id ${pharmacyRow.id}`);
 
 			const existingPharmacy = await db.query.pharmacy.findFirst({
 				where: eq(pharmacy.id, pharmacyRow.id)
 			});
 			if (existingPharmacy !== undefined) {
+				console.log(`Found existing pharmacy ${existingPharmacy.name} with id ${pharmacyRow.id}`);
 				try {
 					await db.update(pharmacy).set(pharmacyRow).where(eq(pharmacy.id, pharmacyRow.id));
+					console.log('Data updated successfully');
 				} catch (error) {
 					console.error(`Failed to update pharmacy with id ${pharmacyRow.id}:`, error);
 					console.log(pharmacyData);
 				}
 			} else {
+				console.log(`Adding new pharmacy ${pharmacyRow.name} with id ${pharmacyRow.id}`);
 				try {
 					await db.insert(pharmacy).values(pharmacyRow);
+					console.log('Row added successfully');
 				} catch (error) {
 					console.error(`Failed to insert pharmacy with id ${pharmacyRow.id}:`, error);
 					console.log(pharmacyData);
