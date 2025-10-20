@@ -104,7 +104,7 @@ export async function POST({ platform, locals }) {
 		console.log('Inserting pharmacies to db');
 
 		try {
-			const chunkSize = 100;
+			const chunkSize = 8;
 			for (let i = 0; i < pharmacies.length; i += chunkSize) {
 				await db
 					.insert(pharmacy)
