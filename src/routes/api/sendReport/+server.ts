@@ -10,6 +10,9 @@ export async function POST({ request, platform, locals }) {
 	if (!pharmacyId || !report) {
 		return new Response('Missing required fields', { status: 400 });
 	}
+	if (!['++', '+', '-'].includes(report)) {
+		return new Response('Invalid report type', { status: 400 });
+	}
 
 	const db = getDb(platform);
 
