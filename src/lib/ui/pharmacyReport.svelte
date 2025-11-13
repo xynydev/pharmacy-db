@@ -110,16 +110,18 @@
 					/>
 					<TextFieldOutlinedMultiline label="Extra comment (optional)" bind:value={note}
 					></TextFieldOutlinedMultiline>
-					{#await session then session}
-						{#if session.data?.user.role === 'superadmin'}
-							<div class="relative mt-2 flex flex-col rounded-xs border-2 border-b-current">
-								<label for="date" class="absolute -top-2 left-4 bg-surface-container-high px-2"
-									>Backfill date (optional)</label
-								>
-								<input class="p-4" type="date" id="date" name="date" bind:value={date} />
-							</div>
-						{/if}
-					{/await}
+					{#if session}
+						{#await session then session}
+							{#if session.data?.user.role === 'superadmin'}
+								<div class="relative mt-2 flex flex-col rounded-xs border-2 border-b-current">
+									<label for="date" class="absolute -top-2 left-4 bg-surface-container-high px-2"
+										>Backfill date (optional)</label
+									>
+									<input class="p-4" type="date" id="date" name="date" bind:value={date} />
+								</div>
+							{/if}
+						{/await}
+					{/if}
 				</form>
 			</div>
 

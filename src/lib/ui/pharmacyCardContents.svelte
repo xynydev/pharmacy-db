@@ -12,6 +12,7 @@
 				excellent: number;
 				good: number;
 				bad: number;
+				latest: string;
 			};
 			id: number;
 			lat: string;
@@ -35,16 +36,16 @@
 		bad: '-'
 	};
 
-	const mainReport =
-		pharmacy.reports.excellent + pharmacy.reports.good + pharmacy.reports.bad > 0
-			? reportTextToValue[
-					Object.keys(pharmacy.reports).find(
-						(key) =>
-							pharmacy.reports[key as keyof typeof pharmacy.reports] ===
-							Math.max(pharmacy.reports.excellent, pharmacy.reports.good, pharmacy.reports.bad)
-					) as keyof typeof reportTextToValue
-				]
-			: '?';
+	const mainReport = pharmacy.reports.latest;
+	// pharmacy.reports.excellent + pharmacy.reports.good + pharmacy.reports.bad > 0
+	// 	? reportTextToValue[
+	// 			Object.keys(pharmacy.reports).find(
+	// 				(key) =>
+	// 					pharmacy.reports[key as keyof typeof pharmacy.reports] ===
+	// 					Math.max(pharmacy.reports.excellent, pharmacy.reports.good, pharmacy.reports.bad)
+	// 			) as keyof typeof reportTextToValue
+	// 		]
+	// 	: '?';
 </script>
 
 <div class="flex flex-row items-center gap-6">
