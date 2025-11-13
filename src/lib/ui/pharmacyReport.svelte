@@ -29,7 +29,10 @@
 		}
 	});
 
-	let session = $derived(authClient.getSession());
+	let session = $state();
+	$effect(() => {
+		session = authClient.getSession();
+	});
 
 	async function submitReport() {
 		if (!pharmacy) return;
