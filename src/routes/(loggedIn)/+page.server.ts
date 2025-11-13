@@ -12,6 +12,7 @@ export const load: PageServerLoad = async ({ platform }) => {
 	const pharmaciesWithReports = pharmacies.map((pharmacy) => {
 		const pharmacyReports = reports
 			.filter((r) => r.pharmacyId === pharmacy.id)
+			.sort((a, b) => b.time.getTime() - a.time.getTime())
 			.map((r) => r.report);
 
 		const excellentReports = pharmacyReports.filter((report) => report === '++');
@@ -23,7 +24,8 @@ export const load: PageServerLoad = async ({ platform }) => {
 			reports: {
 				excellent: excellentReports.length,
 				good: goodReports.length,
-				bad: badReports.length
+				bad: badReports.length,
+				latest: pharmacyReports[0]
 			}
 		};
 	});
