@@ -106,7 +106,7 @@
 <div class="mb-4 w-full">
 	<div class="flex flex-row items-center gap-3">
 		<TextFieldOutlined label="Search" bind:value={query} />
-		<Button variant="outlined" iconType="full" size="l" onclick={geolocate}>
+		<Button variant="outlined" iconType="full" size="m" onclick={geolocate}>
 			<Icon icon={icons['my-location']} />
 		</Button>
 	</div>
