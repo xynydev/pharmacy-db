@@ -13,27 +13,25 @@
 		open: boolean;
 		onClose: () => void;
 		makeReport: () => void;
-		pharmacy:
-			| {
-					reports: {
-						excellent: number;
-						good: number;
-						bad: number;
-					};
-					id: number;
-					lat: string;
-					lon: string;
-					country: 'Finland';
-					name: string;
-					brand: string | null;
-					description: string | null;
-					address: string | null;
-					email: string | null;
-					phone: string | null;
-					opening_hours: string | null;
-					url: string | null;
-			  }
-			| undefined;
+		pharmacy: {
+			reports: {
+				excellent: number;
+				good: number;
+				bad: number;
+			};
+			id: number;
+			lat: string;
+			lon: string;
+			country: 'Finland';
+			name: string;
+			brand: string | null;
+			description: string | null;
+			address: string | null;
+			email: string | null;
+			phone: string | null;
+			opening_hours: string | null;
+			url: string | null;
+		} | null;
 	} = $props();
 
 	let reports:

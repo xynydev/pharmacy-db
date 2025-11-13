@@ -24,23 +24,53 @@
 	let { data }: PageProps = $props();
 	let { pharmacies } = data;
 
-	let query = $state('');
+	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
+	import { SvelteURLSearchParams } from 'svelte/reactivity';
 
-	let filter = $state({
-		quality: {
-			Excellent: false,
-			Good: false,
-			Bad: false,
-			Unknown: false
+	let searchParams = new SvelteURLSearchParams(page.url.searchParams);
+	// let searchParams = $derived(page.url.searchParams);
+
+	let query = $derived(searchParams.get('q') || '');
+
+	// let query = $state('');
+
+	let filter = $state(
+		searchParams.get('filter') !== null
+			? JSON.parse(searchParams.get('filter'))
+			: {
+					quality: {
+						Excellent: false,
+						Good: false,
+						Bad: false,
+						Unknown: false
+					}
+				}
+	);
+
+	let pharmacySheetOpen = $derived(searchParams.get('pharmacy') !== null);
+	let selectedPharmacy: (typeof pharmacies)[0] | null = $derived(
+		searchParams.get('pharmacy')
+			? (pharmacies.find((pharmacy) => pharmacy.id.toString() === searchParams.get('pharmacy')) ??
+					null)
+			: null
+	);
+
+	$effect(() => {
+		searchParams.set('q', query);
+		searchParams.set('filter', JSON.stringify(filter));
+		if (pharmacySheetOpen && selectedPharmacy) {
+			searchParams.set('pharmacy', selectedPharmacy.id.toString());
+		} else {
+			searchParams.delete('pharmacy');
 		}
+		/* eslint svelte/no-navigation-without-resolve: "off" */
+		goto('?' + searchParams.toString(), { replaceState: true, keepFocus: true });
 	});
 
-	let pos = $state({ lat: 0, lon: 0 });
-
-	let pharmacySheetOpen = $state(false);
-	let selectedPharmacy: (typeof pharmacies)[0] | undefined = $state(undefined);
-
 	let pharmacyReportOpen = $state(false);
+
+	let pos = $state({ lat: 0, lon: 0 });
 
 	let filteredSortedPharmacies = $derived.by(() => {
 		const sortedPharmacies =

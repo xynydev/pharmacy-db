@@ -10,7 +10,7 @@
 	}: {
 		open: boolean;
 		onClose: () => void;
-		pharmacy: { name: string; address: string; id: number } | undefined;
+		pharmacy: { name: string; address: string | null; id: number } | null;
 	} = $props();
 
 	let quality: '++' | '+' | '-' | '' = $state('');
@@ -29,10 +29,7 @@
 		}
 	});
 
-	let session = $state();
-	$effect(() => {
-		session = authClient.getSession();
-	});
+	let session = $derived(authClient.getSession());
 
 	async function submitReport() {
 		if (!pharmacy) return;
