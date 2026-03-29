@@ -1,7 +1,7 @@
 <script lang="ts">
 	import PharmacySheet from '$lib/ui/pharmacySheet.svelte';
 	import PharmacyReport from '$lib/ui/pharmacyReport.svelte';
-	import ReportQualityIcon from '$lib/ui/reportQualityIcon.svelte';
+	import PharmacyMapMarker from '$lib/ui/pharmacyMapMarker.svelte';
 	import { reportNameToData } from '$lib/reportHelpers';
 
 	import { ConnectedButtons, TogglePrimitive } from 'm3-svelte';
@@ -100,12 +100,12 @@
 		goto('?' + searchParams.toString(), { replaceState: true, keepFocus: true });
 	});
 
-	function renderMap(node) {
+	function renderMap(node: HTMLElement) {
 		const map = new maplibregl.Map({
 			style: 'https://tiles.openfreemap.org/styles/liberty',
 			center: [26, 65],
 			zoom: 4,
-			container: 'map'
+			container: node
 		});
 
 		map.on('load', async () => {
@@ -143,10 +143,10 @@
 					el.style.display = 'none';
 				}
 
-				mount(ReportQualityIcon, {
+				mount(PharmacyMapMarker, {
 					target: el,
 					props: {
-						report: pharmacy.reports.latest ?? '?'
+						pharmacy
 					}
 				});
 
@@ -164,6 +164,11 @@
 				marker.addTo(map);
 			});
 		});
+
+		map.on('zoom', () => {
+			const zoom = map.getZoom();
+			node.style.setProperty('--show-text', zoom > 8.2 ? '1.0' : '0.0');
+		});
 	}
 </script>
 
@@ -179,7 +184,7 @@
 			</ConnectedButtons>
 		</div>
 	</div>
-	<div use:renderMap class="h-[80svh] w-full" id="map"></div>
+	<div use:renderMap class="h-[80svh] w-full" id="map" style="--show-text: 0;"></div>
 </div>
 
 <PharmacySheet

@@ -18,6 +18,7 @@
 				excellent: number;
 				good: number;
 				bad: number;
+				latest: string;
 			};
 			id: number;
 			lat: string;
