@@ -18,6 +18,7 @@
 				excellent: number;
 				good: number;
 				bad: number;
+				latest: string;
 			};
 			id: number;
 			lat: string;
@@ -43,10 +44,10 @@
 				report: '++' | '+' | '-';
 				extraInfo: string | null;
 		  }>
-		| undefined = $state(undefined);
+		| [] = $state([]);
 
 	$effect(() => {
-		reports = undefined;
+		reports = [];
 		fetch(`/api/getReports?pharmacyId=${pharmacy?.id}`).then((res) => {
 			res.json().then((data) => {
 				reports = data;
@@ -88,26 +89,22 @@
 				{/if}
 			</div>
 			<div class="flex flex-col gap-2">
-				{#if reports}
-					{#if reports.length > 0}
-						{#each reports as report (report.id)}
-							<Card variant="outlined">
-								<div class="flex flex-row items-center gap-5">
-									<ReportQualityIcon report={report.report} />
-									<p class="m3-font-body-medium">{new Date(report.time).toLocaleString('se')}</p>
-								</div>
-								{#if report.extraInfo}
-									<p class="mt-2 p-2 m3-font-body-medium">
-										{report.extraInfo}
-									</p>
-								{/if}
-							</Card>
-						{/each}
-					{:else}
-						<p>No reports found.</p>
-					{/if}
+				{#if reports.length > 0}
+					{#each reports as report (report.id)}
+						<Card variant="outlined">
+							<div class="flex flex-row items-center gap-5">
+								<ReportQualityIcon report={report.report} />
+								<p class="m3-font-body-medium">{new Date(report.time).toLocaleString('se')}</p>
+							</div>
+							{#if report.extraInfo}
+								<p class="mt-2 p-2 m3-font-body-medium">
+									{report.extraInfo}
+								</p>
+							{/if}
+						</Card>
+					{/each}
 				{:else}
-					<p>Loading...</p>
+					<p>No reports found.</p>
 				{/if}
 			</div>
 		</div>
