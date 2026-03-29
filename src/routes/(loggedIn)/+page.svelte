@@ -19,6 +19,8 @@
 	import type { PageProps } from './$types';
 	import PharmacyCardContents from '$lib/ui/pharmacyCardContents.svelte';
 
+	import { reportNameToData } from '$lib/reportHelpers';
+
 	import { haversineDistance } from '$lib/geoHelpers';
 
 	let { data }: PageProps = $props();
@@ -106,16 +108,8 @@
 			}
 			const categories = Object.keys(filter.quality)
 				.filter((key) => filter.quality[key])
-				.map((key) => key.toLowerCase());
-			const mainReport =
-				pharmacy.reports.excellent + pharmacy.reports.good + pharmacy.reports.bad > 0
-					? Object.keys(pharmacy.reports).find(
-							(key) =>
-								pharmacy.reports[key as keyof typeof pharmacy.reports] ===
-								Math.max(pharmacy.reports.excellent, pharmacy.reports.good, pharmacy.reports.bad)
-						)
-					: 'unknown';
-			return categories.includes(mainReport);
+				.map((key) => reportNameToData(key.toLowerCase()));
+			return categories.includes(pharmacy.reports.latest);
 		});
 		return filtered;
 	});
