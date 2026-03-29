@@ -45,5 +45,6 @@
 		padding: 0.7em;
 		opacity: var(--show-text);
 		transition: opacity 500ms;
+		color: black;
 	}
 </style>

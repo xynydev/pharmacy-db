@@ -35,21 +35,10 @@
 		good: '+',
 		bad: '-'
 	};
-
-	const mainReport = pharmacy.reports.latest;
-	// pharmacy.reports.excellent + pharmacy.reports.good + pharmacy.reports.bad > 0
-	// 	? reportTextToValue[
-	// 			Object.keys(pharmacy.reports).find(
-	// 				(key) =>
-	// 					pharmacy.reports[key as keyof typeof pharmacy.reports] ===
-	// 					Math.max(pharmacy.reports.excellent, pharmacy.reports.good, pharmacy.reports.bad)
-	// 			) as keyof typeof reportTextToValue
-	// 		]
-	// 	: '?';
 </script>
 
 <div class="flex flex-row items-center gap-6">
-	<ReportQualityIcon report={mainReport as '++' | '+' | '-' | '?'} />
+	<ReportQualityIcon report={(pharmacy.reports.latest ?? '?') as '++' | '+' | '-' | '?'} />
 	<div class="flex flex-col gap-1">
 		<h2 class="m3-font-title-medium">{pharmacy.name}</h2>
 		<p class="m3-font-body-medium">{pharmacy.address}</p>
