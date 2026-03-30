@@ -3,8 +3,9 @@ import { pharmacy } from '$lib/server/db/schema';
 import { sql } from 'drizzle-orm';
 import type { DrizzleD1Database } from 'drizzle-orm/d1';
 
-// const overpassHost = 'https://overpass-api.de/api/interpreter';
-const overpassHost = 'https://overpass.private.coffee/api/interpreter';
+// https://wiki.openstreetmap.org/wiki/Overpass_API#Public_Overpass_API_instances
+const overpassHost = 'https://overpass-api.de/api/interpreter';
+// const overpassHost = 'https://overpass.private.coffee/api/interpreter';
 
 const overpassQuery = (area: string) =>
 	encodeURIComponent(`[out:json][timeout:25];
