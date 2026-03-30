@@ -92,7 +92,7 @@
 					});
 
 		const fuse = new Fuse(sortedPharmacies, {
-			keys: ['name', 'address']
+			keys: ['name', 'brand', 'address']
 		});
 
 		const fuseResults =

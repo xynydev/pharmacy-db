@@ -40,7 +40,10 @@
 <div class="flex flex-row items-center gap-6">
 	<ReportQualityIcon report={(pharmacy.reports.latest ?? '?') as '++' | '+' | '-' | '?'} />
 	<div class="flex flex-col gap-1">
-		<h2 class="m3-font-title-medium">{pharmacy.name}</h2>
+		<h2 class="m3-font-title-medium">
+			{pharmacy.name}
+			{#if pharmacy.brand}({pharmacy.brand}){/if}
+		</h2>
 		<p class="m3-font-body-medium">{pharmacy.address}</p>
 	</div>
 	<div class="ml-auto">
