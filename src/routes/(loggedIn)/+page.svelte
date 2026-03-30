@@ -134,12 +134,12 @@
 			<Icon icon={icons['my-location']} />
 		</Button>
 	</div>
-	<details class="p-2">
+	<details class="p-2" open>
 		<summary>Service quality guide</summary>
 		<ul class="flex flex-col gap-2 p-4">
 			<li class="flex flex-row items-center gap-2">
-				<ReportQualityIcon report="++" /> Excellent: service was fast and friendly, no needless waiting
-				or uncertainty
+				<ReportQualityIcon report="++" /> Excellent: the prescription was dispensed, service was fast
+				and friendly, no needless waiting or uncertainty
 			</li>
 			<li class="flex flex-row items-center gap-2">
 				<ReportQualityIcon report="+" /> Good: the prescription was dispensed, but service was not perfect
